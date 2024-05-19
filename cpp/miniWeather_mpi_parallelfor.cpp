@@ -501,7 +501,7 @@ void set_halo_values_z( real3d const &state , Fixed_data const &fixed_data ) {
   auto &nx                 = fixed_data.nx                ;
   auto &nz                 = fixed_data.nz                ;
   auto &hy_dens_cell       = fixed_data.hy_dens_cell      ;
-  
+
   // for (ll=0; ll<NUM_VARS; ll++) {
   //   for (i=0; i<nx+2*hs; i++) {
   parallel_for( SimpleBounds<2>(NUM_VARS,nx+2*hs) , YAKL_LAMBDA (int ll, int i) {
@@ -583,18 +583,26 @@ void init( real3d &state , real &dt , Fixed_data &fixed_data ) {
   qweights(1) = 0.444444444444444444444444444444;
   qweights(2) = 0.277777777777777777777777777779;
 
+  real jtemp[4] = {10.0, 15.0, 20.0, 25.0};
+
   std::mt19937 mt(std::time(nullptr));
   std::uniform_real_distribution<double> dist(0.0, 1.0);
-  collision_config.th1_xc  = dist(mt)*xlen;
-  collision_config.th1_zc  = dist(mt)*zlen;
-  collision_config.th1_mag = dist(mt)*20;
-  collision_config.th1_xr  = dist(mt)*0.5*xlen;
-  collision_config.th1_zr  = dist(mt)*0.5*zlen;
-  collision_config.th2_xc  = dist(mt)*xlen;
-  collision_config.th2_zc  = dist(mt)*zlen;
-  collision_config.th2_mag = dist(mt)*20;
-  collision_config.th2_xr  = dist(mt)*0.5*xlen;
-  collision_config.th2_zr  = dist(mt)*0.5*zlen;
+  std::uniform_int_distribution<int> disti(0, 3);
+  collision_config.th1_xc  = (dist(mt)*0.6 + 0.2)*xlen; //location between [0.2, 0.8]*xlen
+  collision_config.th1_zc  = (dist(mt)*0.1 + 0.2)*zlen; //location between [0.2, 0.3]*zlen
+  collision_config.th1_mag = jtemp[disti(mt)]; //dist(mt)*20;
+  collision_config.th1_xr  = (dist(mt)*0.1 + 0.1)*xlen; // size in x, [0.1, 0.2]*xlen
+  collision_config.th1_zr  = (dist(mt)*0.1 + 0.1)*zlen; // size in z, [0.1, 0.2]*zlen
+  collision_config.th2_xc  = (dist(mt)*0.6 + 0.2)*xlen;
+  collision_config.th2_zc  = (dist(mt)*0.1 + 0.7)*zlen; //location between [0.7, 0.8]*zlen
+  collision_config.th2_mag = jtemp[disti(mt)]; //dist(mt)*20;
+  collision_config.th2_xr  = (dist(mt)*0.1 + 0.1)*xlen;
+  collision_config.th2_zr  = (dist(mt)*0.1 + 0.1)*zlen;
+
+  if(mainproc){
+      printf("th1_xc, th1_zc, th1_mag, th1_xr, th1_zr: %lf %lf %lf %lf %lf", collision_config.th1_xc, collision_config.th1_zc, collision_config.th1_mag, collision_config.th1_xr, collision_config.th1_zr);
+      printf("th2_xc, th2_zc, th2_mag, th2_xr, th2_zr: %lf %lf %lf %lf %lf", collision_config.th2_xc, collision_config.th2_zc, collision_config.th2_mag, collision_config.th2_xr, collision_config.th2_zr);
+  }
 
   YAKL_SCOPE(collision_config,::collision_config);
 
