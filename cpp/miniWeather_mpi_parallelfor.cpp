@@ -585,7 +585,9 @@ void init( real3d &state , real &dt , Fixed_data &fixed_data ) {
 
   real jtemp[4] = {10.0, 15.0, 20.0, 25.0};
 
-  std::mt19937 mt(std::time(nullptr));
+  //std::mt19937 mt(std::time(nullptr));
+  std::random_device rd;
+  std::mt19937 mt(rd());
   std::uniform_real_distribution<double> dist(0.0, 1.0);
   std::uniform_int_distribution<int> disti(0, 3);
   collision_config.th1_xc  = (dist(mt)*0.6 + 0.2)*xlen; //location between [0.2, 0.8]*xlen
@@ -600,8 +602,8 @@ void init( real3d &state , real &dt , Fixed_data &fixed_data ) {
   collision_config.th2_zr  = (dist(mt)*0.1 + 0.1)*zlen;
 
   if(mainproc){
-      printf("th1_xc, th1_zc, th1_mag, th1_xr, th1_zr: %lf %lf %lf %lf %lf", collision_config.th1_xc, collision_config.th1_zc, collision_config.th1_mag, collision_config.th1_xr, collision_config.th1_zr);
-      printf("th2_xc, th2_zc, th2_mag, th2_xr, th2_zr: %lf %lf %lf %lf %lf", collision_config.th2_xc, collision_config.th2_zc, collision_config.th2_mag, collision_config.th2_xr, collision_config.th2_zr);
+      printf("th1_xc, th1_zc, th1_mag, th1_xr, th1_zr: %lf %lf %lf %lf %lf\n", collision_config.th1_xc, collision_config.th1_zc, collision_config.th1_mag, collision_config.th1_xr, collision_config.th1_zr);
+      printf("th2_xc, th2_zc, th2_mag, th2_xr, th2_zr: %lf %lf %lf %lf %lf\n", collision_config.th2_xc, collision_config.th2_zc, collision_config.th2_mag, collision_config.th2_xr, collision_config.th2_zr);
   }
 
   YAKL_SCOPE(collision_config,::collision_config);
